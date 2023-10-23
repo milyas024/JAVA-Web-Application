@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">  
+<html xmlns="http://www.w3.org/1999/xhtml"  
+      xmlns:h="http://xmlns.jcp.org/jsf/html"  
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">  
+    <h:head>  
+        <title>Regions</title>  
+        <link href="../css/customStyle.css" rel="stylesheet" type="text/css"/>
+    </h:head>  
+    <h:body>  
+        <p:growl id="growl" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+
+        <div class="card crud-demo">
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="New" icon="pi pi-plus" actionListener="#{region.openNew}"
+                                     update=":DialogForm:manageUsercontent" oncomplete="PF('manageUserDialog').show()"
+                                     styleClass="ui-button-success" style="margin-right: .5rem">
+                        <p:resetInput target=":DialogForm:manageUsercontent"/>
+                    </p:commandButton>
+                    <h7 class="page-header" >Sale Region Information</h7>                    
+                </p:toolbarGroup>
+
+            </p:toolbar>
+            <h:form id="form">
+                <p:dataTable id="dt-region" widgetVar="dtRegion" var="reg" value="#{region.regionList}"
+                             reflow="true" styleClass="products-table"
+                             rowKey="#{reg.regionCode}" paginator="true"
+                             paginatorTemplate=
+                             "{RowsPerPageDropdown} {FirstPageLink}
+                             {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             rowsPerPageTemplate="5,10,15"
+                             rows="10"
+                             scrollable="true" scrollWidth="auto" scrollHeight="390"
+                             paginatorPosition="bottom" tableStyle="table-layout: fixed">
+
+                    <p:column headerText="Region Code"  width="50" >
+                        <h:outputText value="#{reg.regionCode}"/>
+                    </p:column>
+
+                    <p:column headerText="Region Name"  width="100">
+                        <h:outputText value="#{reg.regionName}"/>
+                    </p:column>
+
+                    <p:column headerText=" Country Name" width="50" >
+                        <h:outputText value="#{reg.countryname}"/>
+                    </p:column>
+
+                    
+
+                    <p:column headerText="Post"  width="50">
+                        <h:outputText value="#{reg.post==1 ? 'Posted': 'Unpost'}"/>
+                    </p:column>
+
+                    <p:column id="d" exportable="false" width="50">
+                        <p:commandButton icon="pi pi-pencil" update=":DialogForm:manageUsercontent"
+                                         oncomplete="PF('manageUserDialog').show()" 
+                                         styleClass="edit-button rounded-button ui-button-success" process="@this" action="#{region.selectRegion}">
+                            <f:setPropertyActionListener value="#{reg}" target="#{region.selectedRegion}"/>
+                            <p:resetInput target=":DialogForm:manageUsercontent"/>
+                        </p:commandButton>
+                    </p:column>
+                    <p:column id="d2" exportable="false" width="50">
+                        <p:commandButton id="del" class="ui-button-warning rounded-button" icon="pi pi-trash" process="@this"
+                                         update=":form:dt-region"   oncomplete="PF('deleteUserDialog').show()" >
+                            <f:setPropertyActionListener value="#{reg}" target="#{region.selectedRegion}"/>
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+                <p:blockUI block="dt-region" trigger="@(.ui-button-warning)">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+                </p:blockUI>
+            </h:form>
+
+
+            <p:dialog header="Region Detail" appendTo="@(body)" modal="true" showEffect="fade"
+                      widgetVar="manageUserDialog" id="manageUsersDialog">
+                <h:form id="DialogForm">
+                    <p:panelGrid columns="2" id="manageUsercontent" columnClasses="ui-fluid, ui-fluid"> 
+                        <p:outputLabel for="regionName">Region Name</p:outputLabel>
+                        <p:inputText id="regionName"  value="#{region.selectedRegion.regionName}" required="true" requiredMessage="Region Name is Required"/>
+
+                        <p:outputLabel for="country">Country </p:outputLabel>
+                        <p:selectOneMenu id="country" value="#{region.selectedRegion.countryCode}" required="true" requiredMessage="Country is Required">
+                            <f:selectItems value="#{region.country}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel > </p:outputLabel>
+                        <p:selectBooleanCheckbox value="#{region.post}" itemLabel="Post"/>
+
+                        <p:outputLabel > </p:outputLabel>
+                        <p:panelGrid columns="2">
+                            <p:commandButton value="Save" icon="pi pi-check" 
+                                             update="manageUsercontent form growl" process="@this manageUsercontent"
+                                             actionListener="#{region.updateRegion()}" oncomplete=""/>
+
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageUserDialog').hide()"
+                                             class="ui-button-secondary"/>
+                        </p:panelGrid>
+                    </p:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <p:confirmDialog widgetVar="deleteUserDialog" appendTo="@(body)" showEffect="fade" width="300"
+                             message="Are you sure want to delete this record?" header="Confirm" severity="warn">
+                <p:commandButton value="Yes" icon="pi pi-check" actionListener="#{region.delete}"
+                                 process="@this" oncomplete="PF('deleteUserDialog').hide()" update=":form:dt-region growl"/>
+                <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                 onclick="PF('deleteUserDialog').hide()"/>
+            </p:confirmDialog>
+
+            <p:confirmDialog global="true" showEffect="fade" width="300">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                                 icon="pi pi-times"/>
+            </p:confirmDialog>
+        </div>
+
+    </h:body>  
+</html>  

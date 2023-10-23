@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">  
+<html xmlns="http://www.w3.org/1999/xhtml"  
+      xmlns:h="http://xmlns.jcp.org/jsf/html"  
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">  
+    <h:head>   
+        <title>Ticket Assignment</title>  
+        <link href="../css/customStyle.css" rel="stylesheet" type="text/css"/> 
+    </h:head>  
+    <h:body>  
+        <p:growl id="growl" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+
+        <div class="card crud-demo">
+
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <h7 class="page-header" >Lead / Ticket Activity</h7>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <h:form id="form">
+                <p:dataTable id="dt-region" widgetVar="dtRegion" var="sp" value="#{ticketDetail.saleLeadList}"
+                             reflow="true" styleClass="products-table"
+                             rowKey="#{sp.dtid}" paginator="true"  allowUnsorting="true" sortBy="#{sp.dtid}" sortMode="single"
+                             paginatorTemplate=
+                             "{RowsPerPageDropdown} {FirstPageLink}
+                             {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             rowsPerPageTemplate="5,10,15"
+                             rows="10"
+                             scrollable="true" scrollWidth="auto" scrollHeight="390"
+                             paginatorPosition="bottom" tableStyle="table-layout: fixed">
+<!--                    <f:facet name="{Exporters}">
+                        <h:commandLink value="Download">
+                            <p:dataExporter type="xls" target="dt-region" fileName="TicketActivitydata" />
+                        </h:commandLink>                          
+                    </f:facet>-->
+                    <p:column headerText="Ticket#"  width="50" >
+                        <h:outputText value="#{sp.tid}"/>
+                    </p:column>
+                    <p:column headerText="Customer Name"  width="150" >
+                        <h:outputText value="#{sp.custname}"/>
+                    </p:column>
+                    <p:column headerText="Mob#"  width="100" >
+                        <h:outputText value="#{sp.mob_no}"/>
+                    </p:column>
+                    <p:column headerText="Assigned To"  width="150" >
+                        <h:outputText value="#{sp.salespersonname}"/>
+                    </p:column>
+                    <p:column headerText="City"  width="100" >
+                        <h:outputText value="#{sp.city}"/>
+                    </p:column>
+                    <p:column headerText="CNIC"  width="100" >
+                        <h:outputText value="#{sp.cnic}"/>
+                    </p:column>
+                    <p:column headerText="Remarks"  width="200" >
+                        <h:outputText value="#{sp.remakrs}"/>
+                    </p:column>
+                    <p:column headerText="Instruction"  width="300" >
+                        <h:outputText value="#{sp.instruction}"/>
+                    </p:column>
+                    <p:column headerText="Post"  width="50">
+                        <h:outputText value="#{sp.post==1 ? 'Posted': 'Unpost'}"/>
+                    </p:column>
+                    <p:column headerText="Status"  width="70">
+                        <h:outputText value="#{sp.closingstatusdesc}"/>
+                    </p:column>
+                    <p:column headerText="Creation Date"  width="100" >
+                        <h:outputText value="#{sp.creation_date}"/>
+                    </p:column>
+                    <p:column id="d"  width="50">
+                        <p:commandButton icon="pi pi-pencil" update=":DialogForm:manageUsercontent" rendered="#{sp.closingstatusdesc != 'Completed'}"
+                                         oncomplete="PF('manageUserDialog').show()" 
+                                         styleClass="edit-button rounded-button ui-button-success" process="@this" action="#{ticketDetail.selectsaleLead}">
+                            <f:setPropertyActionListener value="#{sp}" target="#{ticketDetail.selectedsaleLead}"/>                           
+                            <p:resetInput target=":DialogForm:manageUsercontent"/>
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+                <p:blockUI block="dt-region" trigger="@(.ui-button-warning)">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+                </p:blockUI>
+            </h:form>
+            <p:dialog header="Sales Lead" appendTo="@(body)" modal="true" showEffect="fade"
+                      widgetVar="manageUserDialog" id="manageUsersDialog" style="overflow:auto;">
+                <!--<p:scrollPanel style="overflow:auto;">-->
+                <h:form id="DialogForm">
+                    <p:panelGrid columns="4" id="manageUsercontent" columnClasses="ui-fluid, ui-fluid, ui-fluid, ui-fluid">
+                        <p:outputLabel for="custname"> Customer Name</p:outputLabel>
+                        <p:inputText id="custname"  value="#{ticketDetail.selectedsaleLead.custname}"/>
+                        <p:outputLabel for="mob_no"> Mobile</p:outputLabel>
+                        <p:inputText id="mob_no"  value="#{ticketDetail.selectedsaleLead.mob_no}"/>
+                        <p:outputLabel for="cnic">C.N.I.C</p:outputLabel>
+                        <p:inputText id="cnic"  value="#{ticketDetail.selectedsaleLead.cnic}" required="#{ticketDetail.selectedsaleLead.closingstatus == 'C'}" requiredMessage="C.N.I.C is Required"/>
+                        <p:outputLabel for="remakrs">Remarks</p:outputLabel>
+                        <p:inputText id="remakrs"  value="#{ticketDetail.selectedsaleLead.remakrs}" required="true" requiredMessage="Remarks is Required"/>
+                        <p:outputLabel></p:outputLabel>
+                        <p:panelGrid columns="2">
+                            <p:outputLabel></p:outputLabel>
+                            <p:selectOneRadio id="gender" value="#{ticketDetail.selectedsaleLead.closingstatus}" 
+                                              layout="responsive" columns="3" > 
+                                <f:selectItem itemLabel="Completed" itemValue="C"/>
+                                <f:selectItem itemLabel="Declined" itemValue="D"/>
+                                <f:selectItem itemLabel="In-Future" itemValue="F"/>
+                                <p:ajax event="change" listener="#{ticketDetail.updateStatus(e)}"></p:ajax>
+                            </p:selectOneRadio>
+                        </p:panelGrid>
+                        <p:panelGrid columns="2">
+                            <p:selectBooleanCheckbox value="#{ticketDetail.post}" id="post" itemLabel="Post"/>
+                            <p:outputLabel ></p:outputLabel>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="2">
+                            <p:commandButton value="Save" icon="pi pi-check" 
+                                             update="manageUsercontent :form:dt-region growl" process="@this manageUsercontent"
+                                             action="#{ticketDetail.update()}"/>
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageUserDialog').hide()"
+                                             class="ui-button-secondary"/>
+                        </p:panelGrid>
+                    </p:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <p:confirmDialog global="true" showEffect="fade" width="300">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                                 icon="pi pi-times"/>
+            </p:confirmDialog>
+
+        </div>
+    </h:body>  
+</html>  

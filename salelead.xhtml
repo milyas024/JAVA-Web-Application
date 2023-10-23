@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">  
+<html xmlns="http://www.w3.org/1999/xhtml"  
+      xmlns:h="http://xmlns.jcp.org/jsf/html"  
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">  
+    <h:head>   
+        <title>Sales Lead Information</title>  
+        <link href="../css/customStyle.css" rel="stylesheet" type="text/css"/> 
+          <link href="css/layout.css" rel="stylesheet" type="text/css"/>
+    </h:head>  
+    <h:body>  
+        <p:growl id="growl" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+
+        <div class="card crud-demo">
+
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="New" icon="pi pi-plus" action="#{saleLead.openNew}"
+                                     update=":DialogForm:manageUsercontent" oncomplete="PF('manageUserDialog').show()"
+                                     styleClass="ui-button-success" style="margin-right: .5rem">
+                        <p:resetInput target=":DialogForm:manageUsercontent"/>
+                    </p:commandButton>
+                    <h7 class="page-header" >Sale Lead Information</h7>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <h:form id="form">
+                <p:dataTable id="dt-region" widgetVar="dtRegion" var="sp" value="#{saleLead.saleLeadList}"
+                             reflow="true" styleClass="products-table"
+                             rowKey="#{sp.leadid }" paginator="true"  allowUnsorting="true" sortBy="#{sp.leadid}" sortMode="single"
+                             paginatorTemplate=
+                             "{RowsPerPageDropdown} {FirstPageLink}
+                             {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             rowsPerPageTemplate="5,10,15"
+                             rows="10"
+                             scrollable="true" scrollWidth="auto" scrollHeight="390"
+                             paginatorPosition="bottom" tableStyle="table-layout: fixed">
+                       
+                    <p:column headerText="Lead#"  width="40" >
+                        <h:outputText value="#{sp.leadid}"/>
+                    </p:column> 
+                    <p:column headerText="Customer Name"  width="100" >
+                        <h:outputText value="#{sp.custname}"/>
+                    </p:column>
+                    <p:column headerText="Mob#"  width="100" >
+                        <h:outputText value="#{sp.mob_no}"/>
+                    </p:column>
+                    <p:column headerText="Medium"  width="50" >
+                        <h:outputText value="#{sp.leadmedium}"/>
+                    </p:column>
+                    <p:column headerText="Source"  width="50" >
+                        <h:outputText value="#{sp.leadsource}"/>
+                    </p:column>
+                    <p:column headerText="Type"  width="80" >
+                        <h:outputText value="#{sp.leadtype==1 ? 'Sale Lead':'Ticket'}"/>
+                    </p:column>
+                    <p:column headerText="Head Name"  width="150" >
+                        <h:outputText value="#{sp.regionheadname}"/>
+                    </p:column>
+                    <p:column headerText="City"  width="100" >
+                        <h:outputText value="#{sp.city}"/>
+                    </p:column>
+                    <p:column headerText="Gender"  width="50" >
+                        <h:outputText value="#{sp.gender=='M' ? 'Male': 'Female'}"/>
+                    </p:column>
+                    <p:column headerText="Remarks"  width="100" >
+                        <h:outputText value="#{sp.remakrs}"/>
+                    </p:column>
+                     <p:column headerText="R.H Instrunction"  width="100" >
+                         <h:outputText value="#{sp.rhremakrs}"/>
+                    </p:column>
+                    <p:column headerText="S.P Remarks"  width="100" >
+                        <h:outputText value="#{sp.spremakrs}"/>
+                    </p:column>
+                    <p:column headerText="S.P Status"  width="70" >
+                        <h:outputText value="#{sp.spstatusdesc}"/>
+                    </p:column>
+                    <p:column headerText="Post"  width="50">
+                        <h:outputText value="#{sp.post==1 ? 'Posted': 'Unpost'}"/>
+                    </p:column>
+                    <p:column headerText="Status"  width="100">
+                        <h:outputText value="#{sp.statusdesc}"/>
+                    </p:column>
+                    <p:column headerText="Creation Date"  width="100" >
+                        <h:outputText value="#{sp.creation_date}"/>
+                    </p:column>
+                    <p:column id="d"  width="50">
+                        <p:commandButton icon="pi pi-pencil" update=":DialogForm:manageUsercontent" rendered="#{sp.statusdesc != 'Close'}"
+                                         oncomplete="PF('manageUserDialog').show()" 
+                                         styleClass="edit-button rounded-button ui-button-success" process="@this" action="#{saleLead.selectsaleLead}">
+                            <f:setPropertyActionListener value="#{sp}" target="#{saleLead.selectedsaleLead}"/>
+                            <p:resetInput target=":DialogForm:manageUsercontent"/>
+                        </p:commandButton>
+                    </p:column>
+                    <p:column id="d2" width="50">
+                        <p:commandButton id="del" class="ui-button-warning rounded-button" icon="pi pi-trash" process="@this" rendered="#{sp.statusdesc != 'Close'}"
+                                         update=":form:dt-region"   oncomplete="PF('deleteUserDialog').show()" >
+                            <f:setPropertyActionListener value="#{sp}" target="#{saleLead.selectedsaleLead}"/>
+
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+                <p:blockUI block="dt-region" trigger="@(.ui-button-warning)">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+                </p:blockUI>
+            </h:form>
+            <p:dialog header="Sales Lead" appendTo="@(body)" modal="true" showEffect="fade"
+                      widgetVar="manageUserDialog" id="manageUsersDialog" style="overflow:auto;">
+                <h:form id="DialogForm">
+                    <p:panelGrid columns="4" id="manageUsercontent" columnClasses="ui-fluid, ui-fluid, ui-fluid, ui-fluid">
+                        <p:outputLabel for="custname"> Customer Name</p:outputLabel>
+                        <p:inputText id="custname"  value="#{saleLead.selectedsaleLead.custname}" required="true" requiredMessage="Customer Name is Required"/>
+                        <p:outputLabel for="mob_no"> Mobile No</p:outputLabel>
+                        <p:inputText id="mob_no"  value="#{saleLead.selectedsaleLead.mob_no}" required="true" requiredMessage="Mobile No is Required"/>
+
+                        <p:outputLabel for="medium">Medium</p:outputLabel>
+                        <p:selectOneMenu id="medium" value="#{saleLead.selectedsaleLead.mediumid}" required="true" requiredMessage="Medium is Required">
+                            <f:selectItems value="#{saleLead.medium}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="sourceid">Source</p:outputLabel>
+                        <p:selectOneMenu id="sourceid" value="#{saleLead.selectedsaleLead.sourceid}" required="true" requiredMessage="Source is Required">
+                            <f:selectItems value="#{saleLead.lead}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="city_code">City</p:outputLabel>
+                        <p:selectOneMenu id="city_code" value="#{saleLead.selectedsaleLead.city_code}" required="true" requiredMessage="City is Required">
+                            <f:selectItems value="#{saleLead.city}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="regheadid">Regional Head</p:outputLabel>
+                        <p:selectOneMenu id="regheadid" value="#{saleLead.selectedsaleLead.regheadid}" required="true" requiredMessage="Regional Head is Required">
+                            <f:selectItem itemLabel="--- Please Select ---" itemValue=""/>
+                            <f:selectItems value="#{saleLead.region}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="remakrs">Remarks</p:outputLabel>
+                        <p:inputText id="remakrs"  value="#{saleLead.selectedsaleLead.remakrs}" required="true" requiredMessage="Remarks is Required"/>
+
+                        <p:outputLabel ></p:outputLabel>
+                        <p:selectOneRadio id="gender" value="#{saleLead.selectedsaleLead.gender}"
+                                          layout="responsive" columns="2" > 
+                            <f:selectItem itemLabel="Male" itemValue="M"/>
+                            <f:selectItem itemLabel="Female" itemValue="F"/>
+                        </p:selectOneRadio>
+
+                        <p:outputLabel ></p:outputLabel> 
+                        <p:selectOneRadio id="leadtype" value="#{saleLead.selectedsaleLead.leadtype}"
+                                          layout="responsive" columns="2">
+                            <f:selectItem itemLabel="Sale Lead" itemValue="1"/>
+                            <f:selectItem itemLabel="Ticket" itemValue="2"/>
+                        </p:selectOneRadio>
+
+                         <p:outputLabel></p:outputLabel>
+                            <p:selectBooleanCheckbox value="#{saleLead.post}" id="post" itemLabel="Post"/>
+
+                        <p:outputLabel ></p:outputLabel>
+                        <p:selectOneRadio id="periortyid" value="#{saleLead.selectedsaleLead.periortyid}"
+                                          layout="responsive" columns="2">
+                            <f:selectItem itemLabel="Normal" itemValue="1"/>
+                            <f:selectItem itemLabel="Urgent" itemValue="2"/>
+                        </p:selectOneRadio>                       
+                        
+                        <p:selectBooleanButton onLabel="Closed" offLabel="Close" style="width:6rem" offIcon="pi pi-times" value="#{saleLead.closeFlag}">
+                            <p:ajax event="change" update=":form:dt-region growl" listener="#{saleLead.closeLead()}" />
+                        </p:selectBooleanButton>
+                        <p:panelGrid columns="2">
+                            <p:commandButton value="Save" icon="pi pi-check" 
+                                             update="manageUsercontent :form:dt-region growl" process="@this manageUsercontent"
+                                             action="#{saleLead.update()}"/>
+
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageUserDialog').hide()"
+                                             class="ui-button-secondary"/>
+                        </p:panelGrid>
+                    </p:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <p:confirmDialog widgetVar="deleteUserDialog" appendTo="@(body)" showEffect="fade" width="300"
+                             message="Are you sure want to delete this record?" header="Confirm" severity="warn">
+                <p:commandButton value="Yes" icon="pi pi-check" actionListener="#{saleLead.delete}"
+                                 process="@this" oncomplete="PF('deleteUserDialog').hide()" update=":form:dt-region growl"/>
+                <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                 onclick="PF('deleteUserDialog').hide()"/>
+            </p:confirmDialog>
+
+            <p:confirmDialog global="true" showEffect="fade" width="300">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                                 icon="pi pi-times"/>
+            </p:confirmDialog>
+        </div>
+    </h:body>  
+</html>  

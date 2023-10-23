@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">  
+<html xmlns="http://www.w3.org/1999/xhtml"  
+      xmlns:h="http://xmlns.jcp.org/jsf/html"  
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">  
+    <h:head>  
+        <title>City</title>  
+        <link href="../css/customStyle.css" rel="stylesheet" type="text/css"/>
+
+    </h:head>  
+    <h:body>  
+        <p:growl id="growl" showDetail="true" showSummary="false" sticky="false" life="3000"/>
+        <div class="card crud-demo">
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="New" icon="pi pi-plus" actionListener="#{saleCity.openNew}"
+                                     update=":DialogForm:manageUsercontent" oncomplete="PF('manageUserDialog').show()"
+                                     styleClass="ui-button-success" style="margin-right: .5rem">
+                        <p:resetInput target=":DialogForm:manageUsercontent"/>
+                    </p:commandButton>
+                    <h7 class="page-header" >Sale Cities Information</h7>
+                </p:toolbarGroup>
+            </p:toolbar>
+            <h:form id="form">
+                <p:dataTable id="dt-city" widgetVar="dtCity" var="cit" value="#{saleCity.cityList}"
+                             reflow="true" styleClass="products-table"
+                             rowKey="#{cit.cityCode}" paginator="true"
+                             paginatorTemplate=
+                             "{RowsPerPageDropdown} {FirstPageLink}
+                             {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             rowsPerPageTemplate="5,10,15"
+                             rows="10"
+                             scrollable="true" scrollWidth="auto" scrollHeight="390"
+                             paginatorPosition="bottom" tableStyle="table-layout: fixed">
+                    <p:column headerText="City Code" width="50">
+                        <h:outputText value="#{cit.cityCode}"/>
+                    </p:column>
+                    <p:column headerText="Dialing Code" width="50" >
+                        <h:outputText value="#{cit.cityDialingCode}"/>
+                    </p:column>
+                    <p:column headerText="City Name" width="100" >
+                        <h:outputText value="#{cit.cityName}"/>
+                    </p:column>
+                    <p:column headerText=" Country Name" width="100" >
+                        <h:outputText value="#{cit.countryname}"/>
+                    </p:column>
+                    <p:column headerText="Post" width="50" >
+                        <h:outputText value="#{cit.post==1 ? 'Posted': 'Unpost'}"/>
+                    </p:column>
+                    <p:column id="d" exportable="false" width="50">
+                        <p:commandButton icon="pi pi-pencil" update=":DialogForm:manageUsercontent"
+                                         oncomplete="PF('manageUserDialog').show()" 
+                                         styleClass="edit-button rounded-button ui-button-success" process="@this" action="#{saleCity.selectCity}">
+                            <f:setPropertyActionListener value="#{cit}" target="#{saleCity.selectedCity}"/>
+                            <p:resetInput target=":DialogForm:manageUsercontent"/>
+                        </p:commandButton>
+                    </p:column >
+                    <p:column id="d2" exportable="false" width="50">
+                        <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash" process="@this"
+                                         oncomplete="PF('deleteUserDialog').show()">
+                            <f:setPropertyActionListener value="#{cit}" target="#{saleCity.selectedCity}"/>
+                        </p:commandButton>
+
+                    </p:column>
+
+                </p:dataTable>
+                <p:blockUI block="dt-city" trigger="@(.ui-button-warning)">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+                </p:blockUI>
+            </h:form>
+
+            <p:dialog header="City Detail" appendTo="@(body)" showEffect="fade" modal="true"
+                      widgetVar="manageUserDialog" id="manageUsersDialog">
+                <h:form id="DialogForm">
+                    <p:panelGrid columns="2" id="manageUsercontent" columnClasses="ui-fluid, ui-fluid">  
+
+                        <p:outputLabel for="cityName">City Name</p:outputLabel>
+                        <p:inputText id="cityName"  value="#{saleCity.selectedCity.cityName}" required="true" requiredMessage="City Name is Required"/>
+
+                        <p:outputLabel for="cityDialingCode">City Dialing Code</p:outputLabel>
+                        <p:inputText id="cityDialingCode" value="#{saleCity.selectedCity.cityDialingCode}" required="true" requiredMessage="City Dialing Code is Required"/>
+
+                        <p:outputLabel for="country">Country Code</p:outputLabel>
+                        <p:selectOneMenu id="country" value="#{saleCity.selectedCity.countryCode}" required="true" requiredMessage="Country is Required">
+                            <f:selectItems value="#{saleCity.country}"/>
+                        </p:selectOneMenu>
+                        
+                        
+
+                        <p:outputLabel> </p:outputLabel>
+                        <p:selectBooleanCheckbox value="#{saleCity.post}" itemLabel="Post"/>
+
+                        <p:outputLabel> </p:outputLabel>
+                        <p:panelGrid columns="2">
+                            <p:commandButton value="Save" icon="pi pi-check" 
+                                             update="manageUsercontent form growl" process="@this manageUsercontent"
+                                             action="#{saleCity.updateCity()}">
+                            </p:commandButton>   
+                            <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageUserDialog').hide()"
+                                             class="ui-button-secondary"/>
+                        </p:panelGrid>
+                    </p:panelGrid> 
+
+                </h:form>
+            </p:dialog>
+            <p:confirmDialog widgetVar="deleteUserDialog" appendTo="@(body)" showEffect="fade" width="300"
+                             message="Are you sure want to delete this record?" header="Confirm" severity="warn">
+                <p:commandButton value="Yes" icon="pi pi-check" actionListener="#{saleCity.delete}"
+                                 process="@this" oncomplete="PF('deleteUserDialog').hide()" update=":form:dt-city growl"/>
+                <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                 onclick="PF('deleteUserDialog').hide()"/>
+            </p:confirmDialog>
+            <p:confirmDialog global="true" showEffect="fade" width="300">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                                 icon="pi pi-times"/>
+            </p:confirmDialog>
+        </div>
+    </h:body>  
+</html>  
