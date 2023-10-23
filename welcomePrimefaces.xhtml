@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      lang="en">
+    <f:view contentType="text/html" >
+        <link href="css/layout.css" rel="stylesheet" type="text/css"/>
+
+        <ui:insert name="metadata"/>
+        <h:head>            
+            <f:facet name="first">
+                <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
+            </f:facet>
+        </h:head>
+
+        <h:body class="menu-layout-static ">
+
+            <pe:layout id="fullPage" stateCookie="true" widgetVar="fpLayoutWidget"  >
+
+                <pe:layoutPane position="center" closable="false" >
+                    <pe:layoutPane position="north" closable="false" size="52"  >
+                        <p:splitter   gutterSize="1" style="height: 45px; border: 0 none;" styleClass="p-mb-5">
+                            <p:splitterPanel minSize="200" size="200" styleClass="p-d-flex p-ai-center p-jc-left">
+                                <img src="../images/logo.svg" height="90%"  width="100%" alt=""/>
+                            </p:splitterPanel>
+                            <p:splitterPanel>
+                                <h:form style="width:100%">
+                                    <h:panelGrid columns="6" style=" margin-right: 10px; margin-top: 10px; float: right;">
+
+                                        <h:inputText class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all " a:placeholder="Search..." />
+
+                                        <p:commandButton value="SignOut" icon="pi pi-users" styleClass="p-ml-2" action="#{userLoginView.logout()}" />
+
+                                        <p:commandButton icon="pi pi-home" class="pi pi-home" styleClass="p-ml-2 ui-button-success" ajax="false" action="#{menuBean.home}"/>
+                                        <p:badge value="1" styleClass="p-mr-2">
+                                            <p:commandButton type="button" icon="pi pi-bell" styleClass="rounded-button ui-button-warning" />
+                                        </p:badge>
+                                        <p:commandButton type="button" icon="pi pi-calendar" styleClass="rounded-button ui-button-success" />
+
+
+                                        <p:chip  label="#{menuBean.usrname}" image="../images/profile/pp.png" styleClass="p-mr-2 custom-chip" >
+
+                                        </p:chip>
+
+                                    </h:panelGrid>
+                                </h:form>
+                            </p:splitterPanel>
+                        </p:splitter>
+                    </pe:layoutPane>
+                    <pe:layoutPane position="center"  spacingOpen="1" id="centerPanel" class="b">
+                        <div class="ui-layout-content">
+
+                            <ui:include class="URLLocation" src="#{menuBean.urlString}" id="URLLocation">
+
+                            </ui:include>
+
+                        </div>
+                    </pe:layoutPane>
+                </pe:layoutPane>
+
+                <pe:layoutPane position="west" size="220" spacingOpen="1">
+                    <pe:layoutPane position="center" spacingOpen="1"  >
+                        <div>
+                            <h:form >
+<!--                                <p:menu my="left top" at="right top" model="#{menuBean.menu}"></p:menu> -->
+                                <p:panelMenu model="#{menuBean.menu}"></p:panelMenu> 
+
+                            </h:form>
+                        </div>                        
+                    </pe:layoutPane>
+                </pe:layoutPane>
+<!--                <pe:layoutPane position="south" size="60" spacingOpen="1"> 
+                    <pe:layoutPane position="center" spacingOpen="1">
+                        <p:commandButton  class="waves-effect btn-large" action="https://www.facebook.com/ABLFunds/" icon="pi pi-facebook"  />  
+                        <h:outputLabel value="All Rights Reserved By ABLAMC Information Technology" />
+                    </pe:layoutPane>
+
+                </pe:layoutPane>-->
+            </pe:layout>
+        </h:body>
+    </f:view>
+</html>
